@@ -1,0 +1,617 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: nanoaod-argo-
+spec:
+  entrypoint: parallel-worker
+
+  podGC:
+    # pod gc strategy must be one of the following
+    # * OnPodCompletion - delete pods immediately when pod is completed (including errors/failures)
+    # * OnPodSuccess - delete pods immediately when pod is successful
+    # * OnWorkflowCompletion - delete pods when workflow is completed
+    # * OnWorkflowSuccess - delete pods when workflow is successful
+    strategy: OnPodSuccess
+
+  parallelism: 120
+
+  volumes:
+  - name: task-pv-storage
+    persistentVolumeClaim:
+      claimName: nfs-1
+
+  templates:
+  - name: nanoaod-argo
+    inputs:
+      parameters:
+      - name: files
+      - name: it
+    script:
+      imagePullPolicy: Never
+      image: cmsopendata/cmssw_5_3_32
+      command: [sh]
+      source: |
+        source /opt/cms/entrypoint.sh
+        sudo chown $USER /mnt/vol
+        mkdir workspace
+        cd workspace
+        git clone git://github.com/cms-opendata-analyses/AOD2NanoAODOutreachTool  AOD2NanoAOD
+        cd AOD2NanoAOD
+        scram b -j8
+        varfiles="{{inputs.parameters.files}}"
+        sed -i 's,files =,#files =,g' configs/data_cfg.py
+        sed -i 's,files.extend,#files.extend,g' configs/data_cfg.py
+        sed -i "s,*files,'$varfiles',g" configs/data_cfg.py
+        cmsRun configs/data_cfg.py
+        iterator="{{inputs.parameters.it}}"
+        cp output.root /mnt/vol/output$iterator.root
+        echo  ls -l /mnt/vol
+        ls -l /mnt/vol
+      volumeMounts:
+      - name: task-pv-storage
+        mountPath: /mnt/vol
+
+  - name: parallel-worker
+    dag:
+      tasks:
+
+		- name: a1
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/04925DD9-5444-E311-BFF9-002481E0DB70.root
+}, {name: it, value:1}]
+
+		- name: a2
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/088F715E-5144-E311-AB93-003048F01180.root
+}, {name: it, value:2}]
+
+		- name: a3
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/0A0158F9-4C44-E311-B6CF-003048F1B7F0.root
+}, {name: it, value:3}]
+
+		- name: a4
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/0C118E58-5544-E311-A8DA-003048CF9ADA.root
+}, {name: it, value:4}]
+
+		- name: a5
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/14ED2E72-4D44-E311-BDE9-003048F2456C.root
+}, {name: it, value:5}]
+
+		- name: a6
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/18325D3E-4B44-E311-90C7-003048F11D56.root
+}, {name: it, value:6}]
+
+		- name: a7
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/1EBB3D27-4D44-E311-BD03-C860001BD8DA.root
+}, {name: it, value:7}]
+
+		- name: a8
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/203A8261-5244-E311-9A70-02163E008EE4.root
+}, {name: it, value:8}]
+
+		- name: a9
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/2642AD3C-5244-E311-9B7E-003048D2C024.root
+}, {name: it, value:9}]
+
+		- name: a10
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/26BB0741-5244-E311-A544-02163E009DDF.root
+}, {name: it, value:10}]
+
+		- name: a11
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/286181F9-4A44-E311-B523-02163E00CD04.root
+}, {name: it, value:11}]
+
+		- name: a12
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/364FD5B8-4F44-E311-A424-003048FEB916.root
+}, {name: it, value:12}]
+
+		- name: a13
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/369529BC-4D44-E311-8560-0025901D5CBC.root
+}, {name: it, value:13}]
+
+		- name: a14
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/388DD4B5-4F44-E311-A42B-003048F1BFB6.root
+}, {name: it, value:14}]
+
+		- name: a15
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/38EB862A-4D44-E311-85BB-02163E00CC91.root
+}, {name: it, value:15}]
+
+		- name: a16
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/3A51EEE0-4E44-E311-95D0-003048FF3C9A.root
+}, {name: it, value:16}]
+
+		- name: a17
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/3AE8FAF0-4F44-E311-A26C-003048F179BA.root
+}, {name: it, value:17}]
+
+		- name: a18
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/40DDDD25-5144-E311-A829-02163E00A4D8.root
+}, {name: it, value:18}]
+
+		- name: a19
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/44FBC467-5144-E311-8A67-02163E008F68.root
+}, {name: it, value:19}]
+
+		- name: a20
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/46C36B24-5144-E311-B08B-02163E008F0D.root
+}, {name: it, value:20}]
+
+		- name: a21
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/4A9DE7E0-4E44-E311-9D56-003048FEB8A6.root
+}, {name: it, value:21}]
+
+		- name: a22
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/4E598C70-4B44-E311-B47E-003048D2BC6E.root
+}, {name: it, value:22}]
+
+		- name: a23
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/54400571-5344-E311-821C-003048FEB9FA.root
+}, {name: it, value:23}]
+
+		- name: a24
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/5C61541E-5144-E311-94F5-02163E009F82.root
+}, {name: it, value:24}]
+
+		- name: a25
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/5CC8D75F-4D44-E311-8BB1-0025901D5CBC.root
+}, {name: it, value:25}]
+
+		- name: a26
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/5CD28AF8-4C44-E311-85E5-003048FEC15C.root
+}, {name: it, value:26}]
+
+		- name: a27
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/5EF273A4-4A44-E311-AEB9-02163E00CD04.root
+}, {name: it, value:27}]
+
+		- name: a28
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/5EF90661-4E44-E311-95D5-02163E008CCD.root
+}, {name: it, value:28}]
+
+		- name: a29
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/62CA144E-4C44-E311-87B0-00215AEDFE6A.root
+}, {name: it, value:29}]
+
+		- name: a30
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/62F6B520-4D44-E311-BD19-3C4A9279BBEE.root
+}, {name: it, value:30}]
+
+		- name: a31
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/64047936-4B44-E311-9F8D-003048947122.root
+}, {name: it, value:31}]
+
+		- name: a32
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/647FF45A-4E44-E311-8771-003048CFAD0E.root
+}, {name: it, value:32}]
+
+		- name: a33
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/64AD7A82-5444-E311-AC4F-0025B3203768.root
+}, {name: it, value:33}]
+
+		- name: a34
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/6A2C9747-5244-E311-AF48-02163E00A0FA.root
+}, {name: it, value:34}]
+
+		- name: a35
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/6C105D52-5044-E311-AFB5-02163E008F68.root
+}, {name: it, value:35}]
+
+		- name: a36
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/70B08713-5244-E311-96A4-02163E00A0FA.root
+}, {name: it, value:36}]
+
+		- name: a37
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/72B3E512-5444-E311-97E3-003048F17C90.root
+}, {name: it, value:37}]
+
+		- name: a38
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/72EDC7A5-4A44-E311-B5E2-003048F1C496.root
+}, {name: it, value:38}]
+
+		- name: a39
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/7637ED32-4F44-E311-8305-003048FEAF30.root
+}, {name: it, value:39}]
+
+		- name: a40
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/76462264-4D44-E311-B6FA-003048F174AC.root
+}, {name: it, value:40}]
+
+		- name: a41
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/7653DD1C-5444-E311-81A7-003048F23C0A.root
+}, {name: it, value:41}]
+
+		- name: a42
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/78F46A18-4B44-E311-81B7-02163E00A4E2.root
+}, {name: it, value:42}]
+
+		- name: a43
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/78F5DC2D-4F44-E311-A4A0-02163E00A0CC.root
+}, {name: it, value:43}]
+
+		- name: a44
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/7A514BF4-5244-E311-85BC-02163E008CE2.root
+}, {name: it, value:44}]
+
+		- name: a45
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/7A5D7570-4B44-E311-BF55-0025901AF6B4.root
+}, {name: it, value:45}]
+
+		- name: a46
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/82119821-4D44-E311-B466-002481E94970.root
+}, {name: it, value:46}]
+
+		- name: a47
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/82534585-5444-E311-8A37-02163E008F8D.root
+}, {name: it, value:47}]
+
+		- name: a48
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/82BBEFC1-4B44-E311-9EA1-003048F17C28.root
+}, {name: it, value:48}]
+
+		- name: a49
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/841B2E8B-5044-E311-B203-02163E008F68.root
+}, {name: it, value:49}]
+
+		- name: a50
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/84392FE7-5244-E311-9CFD-02163E00A109.root
+}, {name: it, value:50}]
+
+		- name: a51
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/86A6D813-5444-E311-8E2E-003048F1C9DA.root
+}, {name: it, value:51}]
+
+		- name: a52
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/8A051ABA-4F44-E311-9D16-003048FEAD24.root
+}, {name: it, value:52}]
+
+		- name: a53
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/8AB29A3C-4F44-E311-8CC1-003048FE9D18.root
+}, {name: it, value:53}]
+
+		- name: a54
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/8AD4C763-5144-E311-B5C3-18A9055806C0.root
+}, {name: it, value:54}]
+
+		- name: a55
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/8AE6B7E1-4E44-E311-B1A7-02163E008CCD.root
+}, {name: it, value:55}]
+
+		- name: a56
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/8C234CCB-4B44-E311-826D-003048FEBFDC.root
+}, {name: it, value:56}]
+
+		- name: a57
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/8E268FFA-4C44-E311-8569-003048FEAF04.root
+}, {name: it, value:57}]
+
+		- name: a58
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/8E692365-4C44-E311-8645-003048F00B1A.root
+}, {name: it, value:58}]
+
+		- name: a59
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/90F39921-5144-E311-BAE6-02163E00CFDF.root
+}, {name: it, value:59}]
+
+		- name: a60
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/98C3D223-4D44-E311-8365-003048F24A1A.root
+}, {name: it, value:60}]
+
+		- name: a61
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/9C2A0E2B-4F44-E311-8BB3-003048F2456C.root
+}, {name: it, value:61}]
+
+		- name: a62
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/A07D181C-4D44-E311-ABFC-0025901D5CBC.root
+}, {name: it, value:62}]
+
+		- name: a63
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/A2186CA5-5044-E311-9FCD-003048F0E010.root
+}, {name: it, value:63}]
+
+		- name: a64
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/A2803E5E-4E44-E311-B3D0-02163E00A109.root
+}, {name: it, value:64}]
+
+		- name: a65
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/A643F070-4F44-E311-B83B-02163E00A0CC.root
+}, {name: it, value:65}]
+
+		- name: a66
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/A8C14DC4-4B44-E311-9C63-0025901AF6B4.root
+}, {name: it, value:66}]
+
+		- name: a67
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/A8F47273-4E44-E311-ACC1-002481E0D1F2.root
+}, {name: it, value:67}]
+
+		- name: a68
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/AA4C1328-4F44-E311-8444-003048FF3C9A.root
+}, {name: it, value:68}]
+
+		- name: a69
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/AC67B611-5544-E311-B580-003048FEB91E.root
+}, {name: it, value:69}]
+
+		- name: a70
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/AC6B1743-4B44-E311-8A5E-003048FEBFDC.root
+}, {name: it, value:70}]
+
+		- name: a71
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/B025165D-4C44-E311-9E3C-0025901AF6B4.root
+}, {name: it, value:71}]
+
+		- name: a72
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/B0354065-5544-E311-88CD-C860001BD898.root
+}, {name: it, value:72}]
+
+		- name: a73
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/B818CDB6-4F44-E311-9F6C-003048F1186A.root
+}, {name: it, value:73}]
+
+		- name: a74
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/B86FA263-4E44-E311-9E9D-18A9055806C0.root
+}, {name: it, value:74}]
+
+		- name: a75
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/BA631D9D-4E44-E311-980B-003048FEB8F6.root
+}, {name: it, value:75}]
+
+		- name: a76
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/BA637F35-5444-E311-9C18-003048F237E8.root
+}, {name: it, value:76}]
+
+		- name: a77
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/BC572E6A-4D44-E311-8785-003048F1C198.root
+}, {name: it, value:77}]
+
+		- name: a78
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/BCB94348-5244-E311-9EB2-02163E008F17.root
+}, {name: it, value:78}]
+
+		- name: a79
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/C2FB39E1-5744-E311-BE21-02163E007A1E.root
+}, {name: it, value:79}]
+
+		- name: a80
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/C40C2272-4E44-E311-9BF2-003048F1186A.root
+}, {name: it, value:80}]
+
+		- name: a81
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/C4290E52-4C44-E311-A025-0025B3244378.root
+}, {name: it, value:81}]
+
+		- name: a82
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/C49C6899-5544-E311-A2F3-C860001BD898.root
+}, {name: it, value:82}]
+
+		- name: a83
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/C677CA17-5244-E311-B9E1-02163E00CD18.root
+}, {name: it, value:83}]
+
+		- name: a84
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/CE967603-4D44-E311-AF9F-02163E009EC4.root
+}, {name: it, value:84}]
+
+		- name: a85
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D0156113-5444-E311-9837-02163E008F97.root
+}, {name: it, value:85}]
+
+		- name: a86
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D0FF030D-5544-E311-8E37-02163E008F97.root
+}, {name: it, value:86}]
+
+		- name: a87
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D2725E16-5444-E311-9319-003048FEB9FA.root
+}, {name: it, value:87}]
+
+		- name: a88
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D4DD4798-4E44-E311-B78B-02163E008CCD.root
+}, {name: it, value:88}]
+
+		- name: a89
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D60DD518-4B44-E311-9F72-003048947122.root
+}, {name: it, value:89}]
+
+		- name: a90
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D679BC5D-4E44-E311-81C3-003048FEB8A6.root
+}, {name: it, value:90}]
+
+		- name: a91
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D6F42C23-4D44-E311-90F8-003048F1C824.root
+}, {name: it, value:91}]
+
+		- name: a92
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D84A753E-4B44-E311-8AF8-002481E734DA.root
+}, {name: it, value:92}]
+
+		- name: a93
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D8635B4D-4C44-E311-A17E-C860001BD8DA.root
+}, {name: it, value:93}]
+
+		- name: a94
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/D8D26F5F-5744-E311-B6FE-003048F17958.root
+}, {name: it, value:94}]
+
+		- name: a95
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/DA980C5D-4A44-E311-919B-003048F0109A.root
+}, {name: it, value:95}]
+
+		- name: a96
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/DE6FEC7F-5344-E311-B00B-003048FEAEB0.root
+}, {name: it, value:96}]
+
+		- name: a97
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/E01005F9-4B44-E311-B205-003048F1C496.root
+}, {name: it, value:97}]
+
+		- name: a98
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/E0626AA5-5144-E311-B636-02163E009DDF.root
+}, {name: it, value:98}]
+
+		- name: a99
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/E08FE969-4F44-E311-AFA6-003048F1BFB6.root
+}, {name: it, value:99}]
+
+		- name: a100
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/E400163B-4B44-E311-968D-02163E0079DA.root
+}, {name: it, value:100}]
+
+		- name: a101
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/E61B1F56-5044-E311-8152-02163E00A0CC.root
+}, {name: it, value:101}]
+
+		- name: a102
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/E6A12CC0-4D44-E311-B62D-003048CFAD0A.root
+}, {name: it, value:102}]
+
+		- name: a103
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/E879E9FB-4D44-E311-9CB6-02163E008F17.root
+}, {name: it, value:103}]
+
+		- name: a104
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/EABF2266-4E44-E311-BF45-003048FEB8F6.root
+}, {name: it, value:104}]
+
+		- name: a105
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/EE7F5290-4E44-E311-B5A4-002481E0D1F2.root
+}, {name: it, value:105}]
+
+		- name: a106
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/F0BD9948-4B44-E311-AF7C-003048F17C28.root
+}, {name: it, value:106}]
+
+		- name: a107
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/F22DEE97-4E44-E311-A410-003048F0109E.root
+}, {name: it, value:107}]
+
+		- name: a108
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/F484D2E7-5744-E311-9E60-003048FEB9C2.root
+}, {name: it, value:108}]
+
+		- name: a109
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/F612F434-5444-E311-9338-0025B3203768.root
+}, {name: it, value:109}]
+
+		- name: a110
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/F6F90320-4A44-E311-BBCA-02163E00CBD4.root
+}, {name: it, value:110}]
+
+		- name: a111
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/F8C46F21-5144-E311-969F-02163E00CD03.root
+}, {name: it, value:111}]
+
+		- name: a112
+		template: nanoaod-argo arguments: 
+		parameters: [{name: files, value: root://eospublic.cern.ch//eos/opendata/cms/Run2011B/DoubleElectron/AOD/12Oct2013-v1/00000/FED7E92B-4F44-E311-AAE6-003048F1BFB6.root
+}, {name: it, value:112}]
+

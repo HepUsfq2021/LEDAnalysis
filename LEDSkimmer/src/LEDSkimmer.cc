@@ -156,6 +156,7 @@ class LEDSkimmer : public edm::EDAnalyzer {
   const static int max_el = 1000;
   UInt_t value_el_n;
   float value_el_pt[max_el];
+  float value_el_Hcal/Ecal[max_el];
   float value_el_eta[max_el];
   float value_el_phi[max_el];
   float value_el_mass[max_el];
@@ -224,6 +225,7 @@ LEDSkimmer::LEDSkimmer(const edm::ParameterSet& iConfig)
   tree->Branch("Electron_phi", value_el_phi, "Electron_phi[nElectron]/F");
   tree->Branch("Electron_mass", value_el_mass, "Electron_mass[nElectron]/F");
   tree->Branch("Electron_charge", value_el_charge, "Electron_charge[nElectron]/I");
+  tree->Branch("Electron_Hcal/Ecal", value_el_Hcal/Ecal, ":v");
   tree->Branch("Electron_pfRelIso03_all", value_el_pfreliso03all, "Electron_pfRelIso03_all[nElectron]/F");
   tree->Branch("Electron_dxy", value_el_dxy, "Electron_dxy[nElectron]/F");
   tree->Branch("Electron_dxyErr", value_el_dxyErr, "Electron_dxyErr[nElectron]/F");
@@ -321,6 +323,7 @@ LEDSkimmer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if (it->pt() > el_min_pt) {
       //std::cout<<it->pt()<<"================================AQUI===========================\n ";
       selectedElectrons.emplace_back(*it);
+      value_el_Hcal/Ecal[value_el_n] = it->hcalOverEcal();
       value_el_pt[value_el_n] = it->pt();
       value_el_eta[value_el_n] = it->eta();
       value_el_phi[value_el_n] = it->phi();

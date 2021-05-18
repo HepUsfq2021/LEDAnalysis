@@ -13,7 +13,7 @@ spec:
     # * OnWorkflowSuccess - delete pods when workflow is successful
     strategy: OnPodSuccess
 
-  parallelism: 100
+  parallelism: 120
 
   volumes:
   - name: task-pv-storage
@@ -52,17 +52,14 @@ spec:
       - name: task-pv-storage
         mountPath: /mnt/vol
 
-
-      - name: parallel-worker
-        dag:
-          tasks:
-
-                - name: a1
-                template: simulation-argo arguments: 
-                arguments:
-                  parameters: [{name: it, value:1}]
-
-                - name: a2
-                template: simulation-argo arguments: 
-                arguments:
-                  parameters: [{name: it, value:2}]
+  - name: parallel-worker
+    dag:
+      tasks:
+      - name: a1
+        template: simulation-argo
+        arguments:
+          parameters: [{name: it, value: 1}]
+      - name: a2
+        template: simulation-argo
+        arguments:
+          parameters: [{name: it, value: 2}]

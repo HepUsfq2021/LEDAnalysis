@@ -43,8 +43,6 @@ spec:
         cmsDriver.py step2 --filein file:hltDY_10.root --step RAW2DIGI,L1Reco,RECO,VALIDATION:validation_prod,DQM:DQMOfflinePOGMC --datatier AODSIM,DQM --conditions START53_LV6A1::All --fileout=recoDY_10.root --mc --eventcontent AODSIM,DQM  --python_filename recoDY_10.py --no_exec -n 10
         cmsRun recoDY_10.py > recoDY_10.log 2>&1
         iterator="{{inputs.parameters.it}}"
-        cp gensimDY_10.log /mnt/vol/gensimDY_10-$iterator.log
-        cp hltDY_10.log /mnt/vol/hltDY_10-$iterator.log
         cp recoDY_10.root /mnt/vol/recoDY_10-$iterator.root
         echo  ls -l /mnt/vol
         ls -l /mnt/vol

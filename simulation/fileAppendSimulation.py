@@ -1,6 +1,6 @@
 import numpy as np
 
-f = open("pruebaFileAppend.yaml","a+")
+f = open("parallel-simulation_1400events.yaml","a+")
 i = 0
 for i in range(140):
 	i = i+1

@@ -7,39 +7,39 @@ f3 = open("CMS_Run2011B_DoubleElectron_AOD_12Oct2013-v1_00000_file_index.txt", "
 f4 = open("CMS_Run2011B_DoubleElectron_AOD_12Oct2013-v1_20000_file_index.txt", "r")
 
 i = 0
-for linea in f1:
+for line in f1:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
 	f.write("        template: dataskim-argo\n")
 	f.write("        arguments:\n")
-	f.write("          parameters: [{name: files, value: "+linea+"}, {name: it, value: "+str(i)+"}]\n")
+	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 
 f1.close()
 
-for linea in f2:
+for line in f2:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
 	f.write("        template: dataskim-argo\n")
 	f.write("        arguments:\n")
-	f.write("          parameters: [{name: files, value: "+linea+"}, {name: it, value: "+str(i)+"}]\n")
+	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 
 f2.close()
 
-for linea in f3:
+for line in f3:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
 	f.write("        template: dataskim-argo\n")
 	f.write("        arguments:\n")
-	f.write("          parameters: [{name: files, value: "+linea+"}, {name: it, value: "+str(i)+"}]\n")
+	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 
 f3.close()
 
-for linea in f4:
+for line in f4:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
 	f.write("        template: dataskim-argo\n")
 	f.write("        arguments:\n")
-	f.write("          parameters: [{name: files, value: "+linea+"}, {name: it, value: "+str(i)+"}]\n")
+	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 
 
 f.close()

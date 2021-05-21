@@ -5,7 +5,7 @@
 #include <iostream>
 
 void mergeElectronInfoData() {
-TChain ch("aod2nanoaod/Events");
+TChain ch("tree");
 for (int i = 1; i < 3; ++i)
   {
     TString filename = TString::Format("ElectronInfoData-%i.root", i);

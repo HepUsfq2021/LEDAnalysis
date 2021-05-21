@@ -198,7 +198,7 @@ LEDSkimmer::LEDSkimmer(const edm::ParameterSet& iConfig)
 
         : isData(iConfig.getParameter<bool>("isData")) {
    //now do what ever initialization is needed
-  fs = new TFile("EleInfo.root","RECREATE");
+  fs = new TFile("ElectronInfoData.root","RECREATE");
   tree = new TTree("tree","EleInfo");
 
 

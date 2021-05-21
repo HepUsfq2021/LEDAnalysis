@@ -5,8 +5,6 @@ import FWCore.ParameterSet.Types as CfgTypes
 
 process = cms.Process("led")
 
-process.load("Configuration.Geometry.GeometryIdeal_cff")
-process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )

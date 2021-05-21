@@ -36,10 +36,10 @@ spec:
         mkdir workspace
         cd workspace
         git clone -b HcalEcal git://github.com/HepUsfq2021/LEDAnalysis.git
-        cd LEDAnalysis/LEDSkimmer
+        cd LEDAnalysis/LEDSkimmer/
         scram b -j8
         varfiles="{{inputs.parameters.files}}"
-        sed -i 's,*files,'$varfiles',g' ledskimmer_cfg.py
+        sed -i "s,*files,'$varfiles',g" ledskimmer_cfg.py
         cmsRun ledskimmer_cfg.py > skimmer.log 2>&1 &
         iterator="{{inputs.parameters.it}}"
         cp skimmer.log /mnt/vol/skimmer-$iterator.log

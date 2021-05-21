@@ -33,8 +33,6 @@ spec:
       source: |
         source /opt/cms/entrypoint.sh
         sudo chown $USER /mnt/vol
-        mkdir workspace
-        cd workspace
         git clone -b HcalEcal git://github.com/HepUsfq2021/LEDAnalysis.git
         cd LEDAnalysis/LEDSkimmer/
         cmsenv

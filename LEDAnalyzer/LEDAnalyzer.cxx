@@ -9,7 +9,7 @@
 #include <numeric>      // std::iota
 #include <algorithm>
 //compiling line
-//g++ -g -O3 -Wall -Wextra -Wpedantic -o LEDAnalyzer LEDAnalyzer.cxx $(root-config --cflags --libs)  
+//g++ -g -O3 -Wall -Wextra -Wpedantic -o LEDAnalyzer LEDAnalyzer.cxx $(root-config --cflags --libs)
 
 double invmass(float el_pt[], float el_eta[], float el_phi[], float el_mass[], UInt_t nel){
 	using namespace std;
@@ -41,60 +41,78 @@ double invmass(float el_pt[], float el_eta[], float el_phi[], float el_mass[], U
 	P2.SetPtEtaPhiM(el_pt[idx1],el_eta[idx1],el_phi[idx1],el_mass[idx1]);
 	P = (P1+P2);
 	m = P.M();
-	
-	return m;	
+	return m;
 }
 
 
 void LEDAnalyzer(){
 using namespace std;
 //open the root file to read branches from
-TFile* infile = new TFile("data/EleInfo_Data_example.root", "READ");
+TFile* infile = new TFile("data/EleInfoData1400.root", "READ");
 
 //Read the tree where the info was stored
 TTree* mytree = (TTree*)infile->Get("tree");
 
 //declare variables to be used
 UInt_t el_n;
-float el_pt[1000];
-float el_eta[1000];
-float el_phi[1000];
-float el_mass[1000];
+float el_pt[1400];
+float el_eta[1400];
+float el_phi[1400];
+float el_mass[1400];
+float el_HcalOverEcal[1400];
+float el_pZ[1400];
+float el_dxy[1400];
+int el_charge[1400];
 
 TH1F* himass=new TH1F("himass","Masa invariante",250,0,2500);
+TH1F* hhovere=new TH1F("hhovere","HCAL/ECAL",250,0,250);
 
 mytree->SetBranchAddress("nElectron",&el_n);
 mytree->SetBranchAddress("Electron_pt",&el_pt);
 mytree->SetBranchAddress("Electron_eta",&el_eta);
 mytree->SetBranchAddress("Electron_phi",&el_phi);
 mytree->SetBranchAddress("Electron_mass",&el_mass);
+mytree->SetBranchAddress("Electron_HcalOverEcal",&el_HcalOverEcal);
+mytree->SetBranchAddress("PV_z",&el_pZ);
+mytree->SetBranchAddress("Electron_dxy",&el_dxy);
+mytree->SetBranchAddress("Electron_charge",&el_charge);
 
 int nEvents = mytree->GetEntries();
 //loop over event
 for (int j=0;j<nEvents;++j){
 	float invm = -100;
-	cout<<"Event "<<j<<endl;
+	cout<<"Event "<<j+1<<endl;
 	mytree->GetEntry(j);
-	cout<<"Number of electrons found is "<<el_n<<endl;
+//	cout<<"Number of electrons found is "<<el_n<<"  ch: "<<el_charge[j]<<"  dxy:   "<<el_dxy[j]<<endl;
 	//if more than 2 electrons found, calculate the inv mass
 	//To complete more cuts
-	if(el_n>=2){
-		invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
+	if(el_HcalOverEcal[j]<0.05){
+           if(el_n>=2){
+		for(UInt_t i=0; i<el_n; ++i){
+		if(el_charge[i] == 0){
+                 cout<<"Electron charge :"<<el_charge[j]<<endl;
+		 	if(el_dxy[i]<2 && abs(el_pZ[i])<24){
+                     		if(abs(el_eta[i])<1.5){
+                       			invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
+					cout<<"Number of electrons found is "<<el_n<<"  ch: "<<el_charge[j]<<"  dxy:   "<<el_dxy[j]<<endl;
+                		}
+              		}
+	   	}
+		}
 	}
-	himass->Fill(invm);
-	
+	   himass->Fill(invm);
+           hhovere->Fill(el_HcalOverEcal[j]);
+	}
 }
 
 TFile* outfile = new TFile("histos.root","RECREATE");
 himass->Write();
+hhovere->Write();
 outfile->Close();
 }
 
 int main (){
-	using namespace std;		
+	using namespace std;
 	cout<<"Running the LEDAnalyzer ...."<<endl;
 	LEDAnalyzer();
 }
-
-
-

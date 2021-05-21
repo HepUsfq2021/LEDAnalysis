@@ -7,6 +7,3 @@
 <use name="DataFormats/MuonReco"/>
 <use name="RecoMuon/TrackingTools"/>
 <flags EDM_PLUGIN="1"/>
-<export>
-   <lib name="1"/>
-</export>

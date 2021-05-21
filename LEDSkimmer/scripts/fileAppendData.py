@@ -10,7 +10,7 @@ i = 0
 for line in f1:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
-	f.write("        template: dataskim-argo\n")
+	f.write("        template: data-skim-argo\n")
 	f.write("        arguments:\n")
 	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 
@@ -19,7 +19,7 @@ f1.close()
 for line in f2:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
-	f.write("        template: dataskim-argo\n")
+	f.write("        template: data-skim-argo\n")
 	f.write("        arguments:\n")
 	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 
@@ -28,7 +28,7 @@ f2.close()
 for line in f3:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
-	f.write("        template: dataskim-argo\n")
+	f.write("        template: data-skim-argo\n")
 	f.write("        arguments:\n")
 	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 
@@ -37,7 +37,7 @@ f3.close()
 for line in f4:
 	i = i+1
 	f.write("      - name: "+"a"+str(i)+"\n")
-	f.write("        template: dataskim-argo\n")
+	f.write("        template: data-skim-argo\n")
 	f.write("        arguments:\n")
 	f.write("          parameters: [{name: files, value: "+line.rstrip()+"}, {name: it, value: "+str(i)+"}]\n")
 

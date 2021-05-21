@@ -1,0 +1,39 @@
+Setting up CMSSW_5_3_32
+WARNING: In non-interactive mode release checks e.g. deprecated releases, production architectures are disabled.
+CMSSW should now be available.
+Cloning into 'LEDAnalysis'...
+>> Local Products Rules ..... started
+>> Local Products Rules ..... done
+>> Nothing to be done for src/workspace/LEDAnalysis/LEDSkimmer
+>> Local Products Rules ..... started
+>> Local Products Rules ..... done
+gmake[1]: Entering directory `/home/cmsusr/CMSSW_5_3_32'
+>> Creating project symlinks
+>> Pluging of all type refreshed.
+>> Done generating edm plugin poisoned information
+>> Done python_symlink
+>> Compiling python modules python
+>> All python modules compiled
+gmake[1]: Leaving directory `/home/cmsusr/CMSSW_5_3_32'
+>> Local Products Rules ..... started
+>> Local Products Rules ..... done
+>> Nothing to be done for src/workspace/LEDAnalysis/LEDSkimmer
+>> Local Products Rules ..... started
+>> Local Products Rules ..... done
+gmake[1]: Entering directory `/home/cmsusr/CMSSW_5_3_32'
+>> Creating project symlinks
+>> Done python_symlink
+>> Compiling python modules python
+>> All python modules compiled
+>> Pluging of all type refreshed.
+>> Done generating edm plugin poisoned information
+gmake[1]: Leaving directory `/home/cmsusr/CMSSW_5_3_32'
+21-May-2021 23:54:50 CEST  Initiating request to open file root://eospublic.cern.ch//eos/opendata/cms/Run2011A/DoubleElectron/AOD/12Oct2013-v1/20000/0014CE62-9C3E-E311-8FCC-00261894389F.root
+21-May-2021 23:54:54 CEST  Successfully opened file root://eospublic.cern.ch//eos/opendata/cms/Run2011A/DoubleElectron/AOD/12Oct2013-v1/20000/0014CE62-9C3E-E311-8FCC-00261894389F.root
+21-May-2021 23:55:27 CEST  Closed file root://eospublic.cern.ch//eos/opendata/cms/Run2011A/DoubleElectron/AOD/12Oct2013-v1/20000/0014CE62-9C3E-E311-8FCC-00261894389F.root
+----- Begin Fatal Exception 21-May-2021 23:55:27 CEST-----------------------
+An exception of category 'PluginNotFound' occurred while
+   [0] Constructing the EventProcessor
+Exception Message:
+Unable to find plugin 'LEDSkimmer'. Please check spelling of name.
+----- End Fatal Exception -------------------------------------------------

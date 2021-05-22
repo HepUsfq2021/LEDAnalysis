@@ -94,7 +94,15 @@ for (int j=0;j<nEvents;++j){
 		if(el_HcalOverEcal[i]<0.05){
 			if(el_n>=2){
 				if(el_dxy[i]<2 && abs(el_pZ[i])<24){
-					if(abs(el_eta[i])<1.5){
+					if(abs(el_eta[i])<1.5 && abs(el_pt[i])>35){
+						if(total_charge == 0 || abs(total_charge) == 1){
+							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
+							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
+							himass->Fill(invm);
+							hhovere->Fill(el_HcalOverEcal[i]);
+						}
+					}
+					if(abs(1.5<el_eta[i])<3.0 && abs(el_pt[i])>40){
 						if(total_charge == 0 || abs(total_charge) == 1){
 							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
 							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;

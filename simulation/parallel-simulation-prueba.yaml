@@ -35,6 +35,7 @@ spec:
         mkdir workspace
         cd workspace
         wget https://raw.githubusercontent.com/HepUsfq2021/LEDAnalysis/HcalEcal/simulation/ADDMonoJet_7TeV_cfi_prueba.py
+        sed -i 's,semilla,$iterator',g' ADDMonoJet_7TeV_cfi_prueba.py
         sudo cp ADDMonoJet_7TeV_cfi_prueba.py /opt/cms/slc6_amd64_gcc472/cms/cmssw/CMSSW_5_3_32/src/Configuration/Generator/python
         cmsDriver.py ADDMonoJet_7TeV_cfi_prueba.py --mc --beamspot Realistic7TeV2011CollisionV2 --eventcontent=RAWSIM --datatier=GEN-SIM --conditions=START53_LV6A1::All --step=GEN,SIM --python_filename=gensimDY_3.py --no_exec --number=3 --fileout=gensimDY_3.root
         cmsRun gensimDY_3.py

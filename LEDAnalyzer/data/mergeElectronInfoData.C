@@ -6,7 +6,7 @@
 
 void mergeElectronInfoData() {
 TChain ch("tree");
-for (int i = 1; i < 3; ++i)
+for (int i = 1; i < 2684; ++i)
   {
     TString filename = TString::Format("ElectronInfoData-%i.root", i);
     ch.Add(filename);

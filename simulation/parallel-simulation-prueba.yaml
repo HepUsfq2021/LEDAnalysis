@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: simulation-argo-
+spec:
+  entrypoint: parallel-worker
+
+  podGC:
+    # pod gc strategy must be one of the following
+    # * OnPodCompletion - delete pods immediately when pod is completed (including errors/failures)
+    # * OnPodSuccess - delete pods immediately when pod is successful
+    # * OnWorkflowCompletion - delete pods when workflow is completed
+    # * OnWorkflowSuccess - delete pods when workflow is successful
+    strategy: OnPodSuccess
+
+  parallelism: 10
+
+  volumes:
+  - name: task-pv-storage
+    persistentVolumeClaim:
+      claimName: pvc-mynfs
+
+  templates:
+  - name: simulation-argo
+    inputs:
+      parameters:
+      - name: it
+    script:
+      imagePullPolicy: Never
+      image: cmsopendata/cmssw_5_3_32
+      command: [sh]
+      source: |
+        source /opt/cms/entrypoint.sh
+        sudo chown $USER /mnt/vol
+        mkdir workspace
+        cd workspace
+        wget https://raw.githubusercontent.com/HepUsfq2021/LEDAnalysis/HcalEcal/simulation/ADDMonoJet_7TeV_cfi_prueba.py
+        sudo cp ADDMonoJet_7TeV_cfi_prueba.py /opt/cms/slc6_amd64_gcc472/cms/cmssw/CMSSW_5_3_32/src/Configuration/Generator/python
+        cmsDriver.py ADDMonoJet_7TeV_cfi_prueba.py --mc --beamspot Realistic7TeV2011CollisionV2 --eventcontent=RAWSIM --datatier=GEN-SIM --conditions=START53_LV6A1::All --step=GEN,SIM --python_filename=gensimDY_3.py --no_exec --number=3 --fileout=gensimDY_3.root
+        cmsRun gensimDY_3.py
+        cmsDriver.py step1 --filein file:gensimDY_3.root --fileout=hltDY_3.root --mc --eventcontent RAWSIM --datatier GEN-RAW --conditions=START53_LV6A1::All --step=DIGI,L1,DIGI2RAW,HLT:2011 --python_filename hltDY_3.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring --number=3 --pileup_input root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2011/Summer11LegDR/MinBias_TuneZ2_7TeV-pythia6/GEN-SIM/START53_LV4-v1/10000/00064CCC-A218-E311-A2E9-D485646A4E1A.root --pileup 2011_FinalDist_OOTPU
+        cmsRun hltDY_3.py
+        cmsDriver.py step2 --filein file:hltDY_3.root --step RAW2DIGI,L1Reco,RECO,VALIDATION:validation_prod,DQM:DQMOfflinePOGMC --datatier AODSIM,DQM --conditions START53_LV6A1::All --fileout=recoDY_3.root --mc --eventcontent AODSIM,DQM  --python_filename recoDY_3.py --no_exec -n 3
+        cmsRun recoDY_3.py
+        iterator="{{inputs.parameters.it}}"
+        cp recoDY_3.root /mnt/vol/recoDY_3-$iterator.root
+        echo  ls -l /mnt/vol
+        ls -l /mnt/vol
+      volumeMounts:
+      - name: task-pv-storage
+        mountPath: /mnt/vol
+
+  - name: parallel-worker
+    dag:
+      tasks:
+      - name: a1
+        template: simulation-argo
+        arguments:
+          parameters: [{name: it, value: 1}]
+      - name: a2
+        template: simulation-argo
+        arguments:
+          parameters: [{name: it, value: 2}]
+      - name: a3
+        template: simulation-argo
+        arguments:
+          parameters: [{name: it, value: 3}]
+      - name: a4
+        template: simulation-argo
+        arguments:
+          parameters: [{name: it, value: 4}]

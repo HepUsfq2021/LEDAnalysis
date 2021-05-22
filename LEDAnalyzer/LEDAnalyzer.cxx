@@ -48,7 +48,7 @@ double invmass(float el_pt[], float el_eta[], float el_phi[], float el_mass[], U
 void LEDAnalyzer(){
 using namespace std;
 //open the root file to read branches from
-TFile* infile = new TFile("data/EleInfoData1400.root", "READ");
+TFile* infile = new TFile("data/ElectronInfoData1400.root", "READ");
 
 //Read the tree where the info was stored
 TTree* mytree = (TTree*)infile->Get("tree");
@@ -96,7 +96,7 @@ for (int j=0;j<nEvents;++j){
 					}
 						if(total_charge == 0 || abs(total_charge) == 1){
 							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
-							cout<<"Number of electrons found is "<<el_n<<"  ch: "<<el_charge[j]<<"  dxy:   "<<el_dxy[j]<<endl;
+							cout<<"Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
 							himass->Fill(invm);
 							hhovere->Fill(el_HcalOverEcal[j]);
 						}

@@ -62,7 +62,7 @@ float el_mass[1400];
 float el_HcalOverEcal[1400];
 float el_pZ[1400];
 float el_dxy[1400];
-int el_charge[1400];
+int el_charge[el_n];
 
 TH1F* himass=new TH1F("himass","Masa invariante",250,0,2500);
 TH1F* hhovere=new TH1F("hhovere","HCAL/ECAL",250,0,250);
@@ -80,6 +80,7 @@ mytree->SetBranchAddress("Electron_charge",&el_charge);
 int nEvents = mytree->GetEntries();
 //loop over event
 for (int j=0;j<nEvents;++j){
+	int total_charge = 0;
 	float invm = -100;
 	cout<<"Event "<<j+1<<endl;
 	mytree->GetEntry(j);
@@ -87,21 +88,22 @@ for (int j=0;j<nEvents;++j){
 	//if more than 2 electrons found, calculate the inv mass
 	//To complete more cuts
 	if(el_HcalOverEcal[j]<0.05){
-           if(el_n>=2){
-		for(UInt_t i=0; i<el_n; ++i){
-		if(el_charge[i] == 0){
-                 cout<<"Electron charge :"<<el_charge[j]<<endl;
-		 	if(el_dxy[i]<2 && abs(el_pZ[i])<24){
-                     		if(abs(el_eta[i])<1.5){
-                       			invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
-					cout<<"Number of electrons found is "<<el_n<<"  ch: "<<el_charge[j]<<"  dxy:   "<<el_dxy[j]<<endl;
-                		}
-              		}
-	   	}
+		if(el_n>=2){
+			if(el_dxy[j]<2 && abs(el_pZ[j])<24){
+				if(abs(el_eta[j])<1.5){
+					for(UInt_t i=0; i<el_n; ++i){
+						total_charge += el_charge[i];
+					}
+						if(total_charge == 0 || abs(total_charge) == 1){
+							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
+							cout<<"Number of electrons found is "<<el_n<<"  ch: "<<el_charge[j]<<"  dxy:   "<<el_dxy[j]<<endl;
+							himass->Fill(invm);
+							hhovere->Fill(el_HcalOverEcal[j]);
+						}
+					
+				}
+			}
 		}
-	}
-	   himass->Fill(invm);
-           hhovere->Fill(el_HcalOverEcal[j]);
 	}
 }
 

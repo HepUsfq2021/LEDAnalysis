@@ -36,13 +36,14 @@ spec:
         cd workspace
         iterator="{{inputs.parameters.it}}"
         wget https://raw.githubusercontent.com/HepUsfq2021/LEDAnalysis/HcalEcal/simulation/ADDMonoJet_7TeV_cfi_prueba.py
-        echo hello
-        sed -i 's,$semilla,$iterator',g' ADDMonoJet_7TeV_cfi_prueba.py
-        less ADDMonoJet_7TeV_cfi_prueba.py
+        echo hello1
+        sed -i 's,*semilla,$iterator,g' ADDMonoJet_7TeV_cfi_prueba.py
+        echo hello2
         sudo cp ADDMonoJet_7TeV_cfi_prueba.py /opt/cms/slc6_amd64_gcc472/cms/cmssw/CMSSW_5_3_32/src/Configuration/Generator/python
-        echo hello
+        echo hello3
         cmsDriver.py ADDMonoJet_7TeV_cfi_prueba.py --mc --beamspot Realistic7TeV2011CollisionV2 --eventcontent=RAWSIM --datatier=GEN-SIM --conditions=START53_LV6A1::All --step=GEN,SIM --python_filename=gensimDY_3.py --no_exec --number=3 --fileout=gensimDY_3.root
         cmsRun gensimDY_3.py
+        echo hello4
         cmsDriver.py step1 --filein file:gensimDY_3.root --fileout=hltDY_3.root --mc --eventcontent RAWSIM --datatier GEN-RAW --conditions=START53_LV6A1::All --step=DIGI,L1,DIGI2RAW,HLT:2011 --python_filename hltDY_3.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring --number=3 --pileup_input root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2011/Summer11LegDR/MinBias_TuneZ2_7TeV-pythia6/GEN-SIM/START53_LV4-v1/10000/00064CCC-A218-E311-A2E9-D485646A4E1A.root --pileup 2011_FinalDist_OOTPU
         cmsRun hltDY_3.py
         cmsDriver.py step2 --filein file:hltDY_3.root --step RAW2DIGI,L1Reco,RECO,VALIDATION:validation_prod,DQM:DQMOfflinePOGMC --datatier AODSIM,DQM --conditions START53_LV6A1::All --fileout=recoDY_3.root --mc --eventcontent AODSIM,DQM  --python_filename recoDY_3.py --no_exec -n 3

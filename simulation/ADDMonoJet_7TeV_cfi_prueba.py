@@ -9,8 +9,6 @@ generator = cms.EDFilter("Pythia8GeneratorFilter",
 
    PythiaParameters = cms.PSet(
       processParameters = cms.vstring(
-         'Random:setSeed = on',
-         'Random:seed = *semilla',
          'Main:timesAllowErrors    = 10000',
          'ParticleDecays:limitTau0 = on',
          'ParticleDecays:tauMax = 10',

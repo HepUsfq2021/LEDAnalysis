@@ -37,7 +37,8 @@ spec:
         iterator="{{inputs.parameters.it}}"
         wget https://raw.githubusercontent.com/HepUsfq2021/LEDAnalysis/HcalEcal/simulation/ADDMonoJet_7TeV_cfi_prueba.py
         echo hello1
-        sed -i 's,*semilla,$iterator,g' ADDMonoJet_7TeV_cfi_prueba.py
+        sed -i "s,YOURSEED,$iterator,g" ADDMonoJet_7TeV_cfi_prueba.py
+        cp ADDMonoJet_7TeV_cfi_prueba.py /mnt/vol/ADDMonoJet_7TeV_cfi_prueba-$iterator.py
         echo hello2
         sudo cp ADDMonoJet_7TeV_cfi_prueba.py /opt/cms/slc6_amd64_gcc472/cms/cmssw/CMSSW_5_3_32/src/Configuration/Generator/python
         echo hello3

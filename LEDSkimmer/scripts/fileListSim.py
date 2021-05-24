@@ -10,7 +10,3 @@ i = 0
 for i in range(len(fileList)):
 	f.write("file:data/"+fileList[i].rstrip()+"\n")
 f.close()
-
-
-
-

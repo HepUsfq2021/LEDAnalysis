@@ -65,7 +65,7 @@ float el_dxy[2000];
 float gen_motherId[2000];
 int el_charge[2000];
 
-TH1F* himass=new TH1F("himass","Masa invariante",250,0,2500);
+TH1F* himass=new TH1F("invMassSim","Masa invariante",250,0,2500);
 //TH1F* hhovere=new TH1F("hhovere","HCAL/ECAL",250,0,250);
 
 mytree->SetBranchAddress("nElectron",&el_n);

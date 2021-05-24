@@ -63,6 +63,13 @@ float el_HcalOverEcal[2000];
 float el_pZ[2000];
 float el_dxy[2000];
 int el_charge[2000];
+//electron count for each filter
+int HcalOEcal = 0;
+int ne2 = 0;
+int geo = 0;
+int etaETbarrel = 0;
+int etaETendcap = 0;
+int totCh = 0;
 
 TH1F* himass=new TH1F("invMassData","Masa invariante",250,0,2500);
 //TH1F* hhovere=new TH1F("hhovere","HCAL/ECAL",250,0,250);
@@ -92,10 +99,15 @@ for (int j=0;j<nEvents;++j){
 	}
 	for(UInt_t i=0; i<el_n; ++i){
 		if(el_HcalOverEcal[i]<0.05){
+			HcalOEcal += 1;
 			if(el_n>=2){
+				ne2 += 1;
 				if(el_dxy[i]<2 && abs(el_pZ[i])<24){
+					geo += 1;
 					if(abs(el_eta[i])<1.5 && abs(el_pt[i])>35){
+						etaETbarrel += 1;
 						if(total_charge == 0 || abs(total_charge) == 1){
+							totCh += 1;
 							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
 							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
 							himass->Fill(invm);
@@ -103,7 +115,9 @@ for (int j=0;j<nEvents;++j){
 						}
 					}
 					if(abs(1.5<el_eta[i])<3.0 && abs(el_pt[i])>40){
+						etaETendcap += 1;
 						if(total_charge == 0 || abs(total_charge) == 1){
+							totCh += 1;
 							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
 							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
 							himass->Fill(invm);
@@ -115,6 +129,13 @@ for (int j=0;j<nEvents;++j){
 		}
 	}
 }
+
+cout<<HcalOEcal<<"  electrons passed HCAL/ECAL < 0.05 filter"<<endl;
+cout<<ne2<<"  events with more than 2 electrons"<<endl;
+cout<<geo<<"  electrons passed dxy < 2cm and |z| < 24cm filter"<<endl;
+cout<<etaETbarrel<<"  electrons passed the barrel filter"<<endl;
+cout<<etaETendcap<<"  electrons passed the endcap filter"<<endl;
+cout<<totCh<<"  events with opposite charge electrons"<<endl;
 
 TFile* outfile = new TFile("histoData.root","RECREATE");
 himass->Write();

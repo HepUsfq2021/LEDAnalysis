@@ -117,7 +117,7 @@ for (int j=0;j<nEvents;++j){
 }
 
 TFile* outfile = new TFile("histosPrueba.root","RECREATE");
-himass->SetLog
+himass->SetLogy();
 himass->Write();
 hhovere->Write();
 himass->Print("invMassSim.png");

@@ -116,7 +116,7 @@ for (int j=0;j<nEvents;++j){
 	}
 }
 
-TFile* outfile = new TFile("histosPrueba.root","RECREATE");
+TFile* outfile = new TFile("histoData.root","RECREATE");
 himass->Write();
 //hhovere->Write();
 //himass->Print("invMass.png");

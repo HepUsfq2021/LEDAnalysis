@@ -62,6 +62,7 @@ float el_mass[2000];
 float el_HcalOverEcal[2000];
 float el_pZ[2000];
 float el_dxy[2000];
+float gen_motherId[2000];
 int el_charge[2000];
 
 TH1F* himass=new TH1F("himass","Masa invariante",250,0,2500);
@@ -76,6 +77,7 @@ mytree->SetBranchAddress("Electron_HcalOverEcal",&el_HcalOverEcal);
 mytree->SetBranchAddress("PV_z",&el_pZ);
 mytree->SetBranchAddress("Electron_dxy",&el_dxy);
 mytree->SetBranchAddress("Electron_charge",&el_charge);
+mytree->SetBranchAddress("GenPart_motherId",&gen_motherId);
 
 int nEvents = mytree->GetEntries();
 
@@ -94,20 +96,22 @@ for (int j=0;j<nEvents;++j){
 		if(el_HcalOverEcal[i]<0.05){
 			if(el_n>=2){
 				if(el_dxy[i]<2 && abs(el_pZ[i])<24){
-					if(abs(el_eta[i])<1.5 && abs(el_pt[i])>35){
-						if(total_charge == 0 || abs(total_charge) == 1){
-							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
-							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
-							himass->Fill(invm);
-							//hhovere->Fill(el_HcalOverEcal[i]);
+					if(gen_motherId[i] != 23){
+						if(abs(el_eta[i])<1.5 && abs(el_pt[i])>35){
+							if(total_charge == 0 || abs(total_charge) == 1){
+								invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
+								//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
+								himass->Fill(invm);
+								//hhovere->Fill(el_HcalOverEcal[i]);
+							}
 						}
-					}
-					if(abs(1.5<el_eta[i])<3.0 && abs(el_pt[i])>40){
-						if(total_charge == 0 || abs(total_charge) == 1){
-							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
-							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
-							himass->Fill(invm);
-							//hhovere->Fill(el_HcalOverEcal[i]);
+						if(abs(1.5<el_eta[i])<3.0 && abs(el_pt[i])>40){
+							if(total_charge == 0 || abs(total_charge) == 1){
+								invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
+								//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
+								himass->Fill(invm);
+								//hhovere->Fill(el_HcalOverEcal[i]);
+							}
 						}
 					}
 				}
@@ -116,10 +120,9 @@ for (int j=0;j<nEvents;++j){
 	}
 }
 
-TFile* outfile = new TFile("histosPrueba.root","RECREATE");
+TFile* outfile = new TFile("histoSim.root","RECREATE");
 himass->Write();
 //hhovere->Write();
-//himass->Print("invMass.png");
 outfile->Close();
 }
 

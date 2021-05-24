@@ -65,7 +65,7 @@ float el_dxy[2000];
 int el_charge[2000];
 
 TH1F* himass=new TH1F("himass","Masa invariante",250,0,2500);
-TH1F* hhovere=new TH1F("hhovere","HCAL/ECAL",250,0,250);
+//TH1F* hhovere=new TH1F("hhovere","HCAL/ECAL",250,0,250);
 
 mytree->SetBranchAddress("nElectron",&el_n);
 mytree->SetBranchAddress("Electron_pt",&el_pt);
@@ -99,7 +99,7 @@ for (int j=0;j<nEvents;++j){
 							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
 							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
 							himass->Fill(invm);
-							hhovere->Fill(el_HcalOverEcal[i]);
+							//hhovere->Fill(el_HcalOverEcal[i]);
 						}
 					}
 					if(abs(1.5<el_eta[i])<3.0 && abs(el_pt[i])>40){
@@ -107,7 +107,7 @@ for (int j=0;j<nEvents;++j){
 							invm = invmass(el_pt,el_eta,el_phi,el_mass,el_n);
 							//cout<<"In event: "<<j+1<<"   .Number of electrons found is "<<el_n<<"  total charge: "<<total_charge<<endl;
 							himass->Fill(invm);
-							hhovere->Fill(el_HcalOverEcal[i]);
+							//hhovere->Fill(el_HcalOverEcal[i]);
 						}
 					}
 				}
@@ -117,10 +117,9 @@ for (int j=0;j<nEvents;++j){
 }
 
 TFile* outfile = new TFile("histosPrueba.root","RECREATE");
-himass->SetLogy();
 himass->Write();
-hhovere->Write();
-himass->Print("invMassSim.png");
+//hhovere->Write();
+//himass->Print("invMass.png");
 outfile->Close();
 }
 

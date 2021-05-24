@@ -11,8 +11,8 @@ ROOT.gROOT.SetBatch(True)
 
 # Specify the color for each process
 colors = {
-        "data": ROOT.TColor.GetColor("#BF2229"),
-        "sim": ROOT.TColor.GetColor("#00A88F"),
+        "data": ROOT.TColor.GetColor("#00A88F"),
+        "sim": ROOT.TColor.GetColor("#BF2229"),
         }
 
 
@@ -90,7 +90,6 @@ def main():
     # Draw histograms
     data.SetLineColor(colors["data"])
     sim.SetLineColor(colors["sim"])
-    data.SetFillColor(colors["sim"])
 
     stack = ROOT.THStack("", "")
     stack.Add(data)
@@ -99,7 +98,7 @@ def main():
     c = ROOT.TCanvas("", "", 600, 600)
     c.SetLogy()
     stack.Draw("hist")
-    stack.GetXaxis().SetTitle("M_{#mu#mu}[GeV]")
+    stack.GetXaxis().SetTitle("M_{e^{-}e^{+}}[GeV]")
     stack.GetYaxis().SetTitle("Events")
     stack.SetMaximum(max(stack.GetMaximum(), data.GetMaximum()) * 1.4)
     stack.SetMinimum(1.0)
@@ -110,7 +109,7 @@ def main():
     # Add legend
     legend = ROOT.TLegend(0.4, 0.73, 0.90, 0.88)
     legend.SetNColumns(1)
-    legend.AddEntry(data, "Z/#gamma*#rightarrow ee", "f")
+    legend.AddEntry(data, "Z/#gamma*#rightarrow ee", "l")
     legend.AddEntry(sim, "ADD, #Lambda_T=2.8TeV", "l")
     legend.SetBorderSize(0)
     legend.Draw()
@@ -124,7 +123,7 @@ def main():
     latex.DrawLatex(0.16, 0.935, "#bf{CMS Open Data}")
 
     # Save
-    c.SaveAs("ADD.pdf")
-    c.SaveAs("ADD.png")
+    c.SaveAs("ADD3.pdf")
+    c.SaveAs("ADD3.png")
 
 main()

@@ -110,7 +110,7 @@ def main():
     legend = ROOT.TLegend(0.4, 0.73, 0.90, 0.88)
     legend.SetNColumns(1)
     legend.AddEntry(data, "Z/#gamma*#rightarrow ee", "l")
-    legend.AddEntry(sim, "ADD, #Lambda_T=2.8TeV", "l")
+    legend.AddEntry(sim, "ADD, #Lambda_T = 2.8TeV", "l")
     legend.SetBorderSize(0)
     legend.Draw()
 

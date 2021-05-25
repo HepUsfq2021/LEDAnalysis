@@ -95,13 +95,13 @@ def main():
     stack.Add(data)
     stack.Add(sim)
 
-    c = ROOT.TCanvas("", "", 600, 600)
+    c = ROOT.TCanvas("", "", 800, 800)
     c.SetLogy()
     stack.Draw("hist")
     stack.GetXaxis().SetTitle("M_{e^{-}e^{+}}[GeV]")
     stack.GetYaxis().SetTitle("Events")
     stack.SetMaximum(max(stack.GetMaximum(), data.GetMaximum()) * 1.4)
-    stack.SetMinimum(1.0)
+    stack.SetMinimum(0.001)
 
     data.Draw("HIST SAME")
     sim.Draw("HIST SAME")
@@ -109,7 +109,7 @@ def main():
     # Add legend
     legend = ROOT.TLegend(0.4, 0.73, 0.90, 0.88)
     legend.SetNColumns(1)
-    legend.AddEntry(data, "Z/#gamma*#rightarrow ee", "l")
+    legend.AddEntry(data, "CMS Data", "l")
     legend.AddEntry(sim, "ADD, #Lambda_T = 2.8TeV", "l")
     legend.SetBorderSize(0)
     legend.Draw()
@@ -123,7 +123,7 @@ def main():
     latex.DrawLatex(0.16, 0.935, "#bf{CMS Open Data}")
 
     # Save
-    c.SaveAs("ADD3.pdf")
-    c.SaveAs("ADD3.png")
+    c.SaveAs("ADD.pdf")
+    c.SaveAs("ADD.png")
 
 main()
